@@ -1,0 +1,21 @@
+# Liam Huang — Developer
+
+> Freelance web designer and front-end developer building fast, minimal, high-performance websites with semantic HTML, structured CSS, and modern vanilla JavaScript. No frameworks, no cookies, no analytics, no advertising — nothing about visitors is tracked.
+
+## Pages
+
+- [Home](https://liamhuang.dev/): Portfolio introduction with five short sections describing services and availability, plus a contact form.
+- [Privacy Policy](https://liamhuang.dev/privacy.html): Data handling practices. The only data collected is what a visitor voluntarily sends through the contact form (name, email, message); it is never sold or shared.
+
+## Services
+
+- Freelance web design with a focus on high-performance user interfaces
+- Semantic HTML, structured CSS, and modern JavaScript without unnecessary frameworks
+- Bridging visual design and fluid interaction: pixel-perfect execution, intuitive navigation, cross-browser compatibility
+- Full frontend process: layout prototyping through production deployment, performance optimization, legacy UI modernization, stable frame rates during animation
+- Currently available for freelance contracts, custom UI design, and front-end development partnerships
+
+## Contact
+
+- Email: Developer@liamhuang.dev
+- Contact form: https://liamhuang.dev/#contact
