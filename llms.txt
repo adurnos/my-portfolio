@@ -4,8 +4,8 @@
 
 ## Pages
 
-- [Home](https://liamhuang.dev/): Portfolio introduction with five short sections describing services and availability, plus a contact form.
-- [Privacy Policy](https://liamhuang.dev/privacy.html): Data handling practices. The only data collected is what a visitor voluntarily sends through the contact form (name, email, message); it is never sold or shared.
+- [Home](https://liamhuang.dev/): Portfolio introduction with five short sections describing services and availability, selected work (three placeholders), plus a contact form.
+- [Privacy Policy](https://liamhuang.dev/privacy.html): Data handling practices. The only data collected is what a visitor voluntarily sends through the contact form (name, email, message); it is never sold or shared. Fonts are loaded from Google Fonts.
 
 ## Services
 
@@ -14,6 +14,10 @@
 - Bridging visual design and fluid interaction: pixel-perfect execution, intuitive navigation, cross-browser compatibility
 - Full frontend process: layout prototyping through production deployment, performance optimization, legacy UI modernization, stable frame rates during animation
 - Currently available for freelance contracts, custom UI design, and front-end development partnerships
+
+## Selected Work
+
+- Three minimalist placeholder projects on the homepage — see https://liamhuang.dev/#work (real case studies coming soon)
 
 ## Contact
 
