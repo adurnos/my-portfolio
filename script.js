@@ -25,11 +25,9 @@
   try {
     isCoarse = window.matchMedia("(pointer: coarse)").matches || "ontouchstart" in window;
   } catch (_) {}
-  // crossfade is graceful: if only one img exists, we fall back to single-src swap
   var hasCrossfade = !!(blobA && blobB);
   var crossfadeOn = hasCrossfade && !reduced;
-  // keep it very light: fast 70ms fade, but skip if user prefers reduced-motion
-  var activeBlob = 0; // 0=A is visible, 1=B
+  var activeBlob = 0;
   var vh = window.innerHeight,
     lockY = 1,
     spanEnd = 1,
@@ -52,6 +50,7 @@
   var rafAlive = true,
     lastTime = 0,
     errorCount = 0;
+
   function clamp(v, lo, hi) {
     return v < lo ? lo : v > hi ? hi : v;
   }
@@ -62,57 +61,87 @@
     return FRAME_SRC.replace("###", pad(i + 1));
   }
   function getFrame(i) {
+    if (i < 0 || i >= FRAME_COUNT) return null;
     if (!frameCache[i]) {
       var img = new Image();
       img.decoding = "async";
+      img.loading = "eager";
       img.src = frameSrc(i);
       frameCache[i] = img;
     }
     return frameCache[i];
   }
-  function warmFrames(center) {
-    var from = Math.max(0, center - 6),
-      ahead = center > FRAME_COUNT / 2 ? center - 12 : center + 12,
-      to = Math.min(FRAME_COUNT - 1, Math.max(center + 6, ahead));
-    for (var i = from; i <= to; i++) getFrame(i);
+  function isReady(i) {
+    var c = frameCache[i];
+    return !!(c && c.complete && c.naturalWidth);
   }
+  // tiny look-ahead - keep it light, progressive loader does the heavy lifting
+  function warmNearby(center) {
+    var a = center + 1, b = center + 2, c2 = center - 1;
+    if (a < FRAME_COUNT) getFrame(a);
+    if (b < FRAME_COUNT) getFrame(b);
+    if (c2 >= 0) getFrame(c2);
+  }
+  // progressive idle preload: trickle remaining frames without flooding network
+  var preloadNext = 0;
+  function scheduleProgressive() {
+    preloadNext = 40; // first 40 are eagerly fetched in boot
+    if (!("requestIdleCallback" in window)) {
+      // fallback: staggered setTimeout batches
+      function batch() {
+        for (var k = 0; k < 10 && preloadNext < FRAME_COUNT; k++, preloadNext++) getFrame(preloadNext);
+        if (preloadNext < FRAME_COUNT) setTimeout(batch, 90);
+      }
+      setTimeout(batch, 600);
+      return;
+    }
+    function idlePreload(deadline) {
+      var budget = 12;
+      while (preloadNext < FRAME_COUNT && budget-- > 0) {
+        if (deadline.timeRemaining() < 4 && !deadline.didTimeout) break;
+        getFrame(preloadNext++);
+      }
+      if (preloadNext < FRAME_COUNT) requestIdleCallback(idlePreload, { timeout: 1800 });
+    }
+    requestIdleCallback(idlePreload, { timeout: 900 });
+  }
+
   function setFrame(i) {
     if (i === lastFrame) return;
-    // crossfade path: preload offscreen, decode, then flip opacity - ultra light, no layout
+    // if requested frame not decoded yet, don't show blank - hold last frame and queue it
+    if (!isReady(i)) {
+      // try nearest ready within 3 steps so motion doesn't freeze completely
+      var fallback = -1;
+      for (var d = 1; d <= 3; d++) {
+        var lo = i - d, hi = i + d;
+        if (lo >= 0 && isReady(lo)) { fallback = lo; break; }
+        if (hi < FRAME_COUNT && isReady(hi)) { fallback = hi; break; }
+      }
+      getFrame(i);
+      warmNearby(i);
+      if (fallback !== -1) i = fallback;
+      else return; // keep current visible - prevents flash/chop
+      if (i === lastFrame) return;
+    }
     if (crossfadeOn) {
       var hidden = activeBlob === 0 ? blobB : blobA;
       var visible = activeBlob === 0 ? blobA : blobB;
       if (!hidden || !visible) return;
       lastFrame = i;
       var src = frameSrc(i);
-      var cached = frameCache[i];
-      // if we have it decoded, swap with a quick crossfade
-      var doSwap = function () {
-        hidden.src = src;
-        // next frame toggle opacity
+      // hidden is offscreen (opacity 0) - decode there without janking visible
+      hidden.src = src;
+      var doFlip = function () {
         hidden.classList.add("is-active");
         visible.classList.remove("is-active");
         activeBlob = activeBlob === 0 ? 1 : 0;
         blobFrame = activeBlob === 0 ? blobA : blobB;
       };
-      if (cached && cached.complete && cached.naturalWidth) {
-        // ensure it's instant: set then let decode promise resolve before opacity flip if needed
-        hidden.src = src;
-        if (hidden.decode) {
-          hidden.decode().then(function () { doSwap(); }).catch(function () { doSwap(); });
-        } else {
-          doSwap();
-        }
-      } else {
-        getFrame(i);
-        // for first-hit frames, just swap without waiting - avoiding flash is more important than decode
-        doSwap();
-      }
+      if (hidden.decode) hidden.decode().then(doFlip).catch(doFlip);
+      else doFlip();
       if ("requestIdleCallback" in window) {
-        requestIdleCallback(function () { warmFrames(i); }, { timeout: 220 });
-      } else {
-        setTimeout(function () { warmFrames(i); }, 48);
-      }
+        requestIdleCallback(function () { warmNearby(i); }, { timeout: 220 });
+      } else setTimeout(function () { warmNearby(i); }, 48);
       return;
     }
     if (!blobFrame) return;
@@ -120,11 +149,10 @@
     blobFrame.src = frameSrc(i);
     if (blobFrame.decode) blobFrame.decode().catch(function () {});
     if ("requestIdleCallback" in window) {
-      requestIdleCallback(function () { warmFrames(i); }, { timeout: 220 });
-    } else {
-      setTimeout(function () { warmFrames(i); }, 48);
-    }
+      requestIdleCallback(function () { warmNearby(i); }, { timeout: 220 });
+    } else setTimeout(function () { warmNearby(i); }, 48);
   }
+
   function realVh() {
     var v = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
     return Math.max(280, v);
@@ -139,8 +167,6 @@
     if (phraseEls.length > 0) {
       var last = phraseEls[phraseEls.length - 1];
       var lastCenter = last.offsetTop + last.offsetHeight / 2;
-      // blob starts leaving exactly when last paragraph fades (band edge = center + 0.30vh)
-      // tiny 12px buffer so fade completes before translate kicks in
       var fadeOutY = lastCenter - useVh * 0.5 + useVh * 0.3;
       exitAnchor = fadeOutY + 12;
     } else if (contact) {
@@ -156,6 +182,7 @@
     var bigFont = Math.min(Math.max(window.innerWidth * 0.042, 24), 51.2);
     scaleRatio = clamp(19 / bigFont, 0.42, 1);
   }
+
   function render(y, dt) {
     if (!isFinite(y)) y = 0;
     y = clamp(y, 0, maxScroll);
@@ -202,6 +229,7 @@
       pair.copy.classList.toggle("is-visible", Math.abs(c - vh / 2) < band);
     }
   }
+
   var scrollIsNative = false;
   function useNativeScroll() {
     scrollIsNative = true;
@@ -211,32 +239,9 @@
   function useWheelSmoothScroll() {
     scrollIsNative = false;
   }
-  window.addEventListener(
-    "touchstart",
-    function () {
-      if (!isCoarse) return;
-      useNativeScroll();
-    },
-    { passive: true }
-  );
-  window.addEventListener(
-    "touchmove",
-    function () {
-      if (!isCoarse) return;
-      useNativeScroll();
-    },
-    { passive: true }
-  );
-  window.addEventListener(
-    "touchend",
-    function () {
-      if (!isCoarse) return;
-      setTimeout(function () {
-        if (!isCoarse) return;
-      }, 180);
-    },
-    { passive: true }
-  );
+  window.addEventListener("touchstart", function () { if (isCoarse) useNativeScroll(); }, { passive: true });
+  window.addEventListener("touchmove", function () { if (isCoarse) useNativeScroll(); }, { passive: true });
+  window.addEventListener("touchend", function () { if (!isCoarse) return; setTimeout(function () {}, 180); }, { passive: true });
   window.addEventListener(
     "wheel",
     function (e) {
@@ -275,6 +280,7 @@
     },
     { passive: true }
   );
+
   var contactForm = document.getElementById("contact-form"),
     thanksEl = document.getElementById("form-thanks");
   if (contactForm) {
@@ -287,24 +293,16 @@
       document.body.style.cursor = "progress";
       var fd = {},
         fields = new FormData(contactForm);
-      fields.forEach(function (v, k) {
-        fd[k] = v;
-      });
+      fields.forEach(function (v, k) { fd[k] = v; });
       var ctrl = new AbortController(),
-        to = setTimeout(function () {
-          ctrl.abort();
-        }, 12000);
+        to = setTimeout(function () { ctrl.abort(); }, 12000);
       fetch("https://formsubmit.co/ajax/developer@liamhuang.dev", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(fd),
         signal: ctrl.signal,
       })
-        .then(function (r) {
-          return r.json().catch(function () {
-            return {};
-          });
-        })
+        .then(function (r) { return r.json().catch(function () { return {}; }); })
         .then(function (res) {
           clearTimeout(to);
           document.body.style.cursor = "";
@@ -315,9 +313,7 @@
               thanksEl.hidden = false;
             }
             contactForm.reset();
-          } else {
-            throw new Error("bad response");
-          }
+          } else throw new Error("bad response");
         })
         .catch(function () {
           clearTimeout(to);
@@ -330,6 +326,7 @@
         });
     });
   }
+
   function updateIntro(dt) {
     if (!introActive) return;
     introVel *= Math.exp(-dt / 110);
@@ -369,19 +366,19 @@
     requestAnimationFrame(loop);
   }
   function boot() {
-    for (var i = 0; i < 8; i++) getFrame(i);
+    // eagerly warm first 40 frames so initial idle + first scrolls are instant
+    for (var i = 0; i < 40 && i < FRAME_COUNT; i++) getFrame(i);
     vhStable = realVh();
     measure();
     targetY = smoothY = window.scrollY;
     lastSetY = smoothY;
     render(smoothY, 16);
     requestAnimationFrame(loop);
+    scheduleProgressive();
   }
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+
   var measureRaf = 0;
   function scheduleMeasure() {
     if (measureRaf) return;
