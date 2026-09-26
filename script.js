@@ -3,75 +3,20 @@ document.documentElement.classList.add("js");
 const year = document.querySelector("#year");
 if (year) year.textContent = new Date().getFullYear();
 
-let navigationScrollFrame = 0;
-let restoreScrollBehavior = null;
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+const canAnimate = () => !motionPreference.matches;
+const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+const scrollBehavior = () => motionPreference.matches ? "auto" : "smooth";
 
-const cancelNavigationScroll = () => {
-  if (!navigationScrollFrame) return;
-  window.cancelAnimationFrame(navigationScrollFrame);
-  navigationScrollFrame = 0;
-  restoreScrollBehavior?.();
-  restoreScrollBehavior = null;
-};
-
-const smoothScrollTo = (target) => {
-  cancelNavigationScroll();
-
-  const root = document.documentElement;
-  const previousBehavior = root.style.scrollBehavior;
-  root.style.scrollBehavior = "auto";
-  restoreScrollBehavior = () => { root.style.scrollBehavior = previousBehavior; };
-
-  const start = window.scrollY;
-  const destination = Math.max(0, target.getBoundingClientRect().top + start - 16);
-  const distance = destination - start;
-  const duration = Math.min(400, Math.max(200, Math.abs(distance) * 0.2));
-  let startTime;
-
-  const step = (time) => {
-    if (startTime === undefined) startTime = time;
-    const progress = Math.min(1, (time - startTime) / duration);
-    const eased = progress * progress * (3 - 2 * progress);
-    window.scrollTo(0, start + distance * eased);
-
-    if (progress < 1) {
-      navigationScrollFrame = window.requestAnimationFrame(step);
-    } else {
-      navigationScrollFrame = 0;
-      restoreScrollBehavior?.();
-      restoreScrollBehavior = null;
-    }
-  };
-
-  navigationScrollFrame = window.requestAnimationFrame(step);
-};
-
-["wheel", "touchstart", "keydown"].forEach((eventName) => {
-  window.addEventListener(eventName, cancelNavigationScroll, { passive: true });
-});
-
-document.querySelectorAll('.site-header nav a[href^="#"]').forEach((link) => {
-  link.addEventListener("click", (event) => {
-    const target = document.querySelector(link.getAttribute("href"));
-    if (!target) return;
-
-    event.preventDefault();
-    history.pushState(null, "", link.getAttribute("href"));
-    smoothScrollTo(target);
-  });
-});
-
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const revealItems = document.querySelectorAll(".reveal");
-const pageCanAnimate = !reduceMotion.matches;
 const hero = document.querySelector(".hero");
 const heroVisual = document.querySelector(".hero-visual");
 const heroWindow = heroVisual?.querySelector(".hero-window");
 const scrollHeadings = document.querySelectorAll(".scroll-heading");
 const projectArts = document.querySelectorAll(".project-art");
-let framePending = false;
+let scrollFramePending = false;
 
-if (pageCanAnimate && "IntersectionObserver" in window) {
+if ("IntersectionObserver" in window && canAnimate()) {
   const revealObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
@@ -85,15 +30,13 @@ if (pageCanAnimate && "IntersectionObserver" in window) {
   revealItems.forEach((item) => item.classList.add("is-visible"));
 }
 
-const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
-
 const updateScrollMotion = () => {
-  if (framePending) return;
-  framePending = true;
+  if (scrollFramePending) return;
+  scrollFramePending = true;
 
   window.requestAnimationFrame(() => {
-    framePending = false;
-    if (!pageCanAnimate) return;
+    scrollFramePending = false;
+    if (!canAnimate()) return;
 
     const viewportHeight = window.innerHeight || 1;
 
@@ -120,7 +63,6 @@ const updateScrollMotion = () => {
       art.style.setProperty("--scroll-lift", `${remaining * 110}px`);
       art.style.setProperty("--scroll-rotate", `${remaining * 24}deg`);
       art.style.setProperty("--scroll-scale", `${0.82 + progress * 0.18}`);
-      art.style.setProperty("--scroll-y", `${remaining * 24}px`);
     });
   });
 };
@@ -132,48 +74,164 @@ updateScrollMotion();
 const setPointerTilt = (element, event, tiltXVar, tiltYVar, maxTilt = 12) => {
   if (event.pointerType === "touch") return;
   const bounds = element.getBoundingClientRect();
+  if (!bounds.width || !bounds.height) return;
   const x = clamp((event.clientX - bounds.left) / bounds.width);
   const y = clamp((event.clientY - bounds.top) / bounds.height);
   element.style.setProperty(tiltXVar, `${(0.5 - y) * maxTilt}deg`);
   element.style.setProperty(tiltYVar, `${(x - 0.5) * maxTilt}deg`);
-  element.style.setProperty("--pointer-x", `${x * 100}%`);
-  element.style.setProperty("--pointer-y", `${y * 100}%`);
 };
 
-if (pageCanAnimate) {
-  heroVisual?.addEventListener("pointermove", (event) => {
-    if (heroWindow) setPointerTilt(heroWindow, event, "--hero-tilt-x", "--hero-tilt-y", 10);
+heroVisual?.addEventListener("pointermove", (event) => {
+  if (canAnimate() && heroWindow) setPointerTilt(heroWindow, event, "--hero-tilt-x", "--hero-tilt-y", 10);
+});
+
+heroVisual?.addEventListener("pointerleave", () => {
+  heroWindow?.style.removeProperty("--hero-tilt-x");
+  heroWindow?.style.removeProperty("--hero-tilt-y");
+});
+
+document.querySelectorAll(".project-art").forEach((art) => {
+  art.addEventListener("pointermove", (event) => {
+    if (canAnimate()) setPointerTilt(art, event, "--tilt-x", "--tilt-y", 10);
   });
-  heroVisual?.addEventListener("pointerleave", () => {
-    heroWindow?.style.removeProperty("--hero-tilt-x");
-    heroWindow?.style.removeProperty("--hero-tilt-y");
+  art.addEventListener("pointerleave", () => {
+    art.style.removeProperty("--tilt-x");
+    art.style.removeProperty("--tilt-y");
+  });
+});
+
+const projectList = document.querySelector(".project-list");
+const projectCards = projectList ? [...projectList.querySelectorAll(".project")] : [];
+const carouselStatus = document.querySelector(".carousel-status");
+const previousProjectButton = document.querySelector('[data-carousel-direction="-1"]');
+const nextProjectButton = document.querySelector('[data-carousel-direction="1"]');
+
+if (projectList && projectCards.length) {
+  let activeCardIndex = 0;
+  let statusFramePending = false;
+  let dragPointerId = null;
+  let dragStartX = 0;
+  let dragStartScrollLeft = 0;
+  let isDragging = false;
+  const isCarouselLayout = () => window.matchMedia("(max-width: 700px)").matches;
+
+  const getContentStart = () => {
+    const styles = window.getComputedStyle(projectList);
+    return projectList.getBoundingClientRect().left + (Number.parseFloat(styles.paddingLeft) || 0);
+  };
+
+  const getCardOffset = (card) => card.getBoundingClientRect().left - getContentStart() + projectList.scrollLeft;
+
+  const updateCarouselControls = () => {
+    if (!isCarouselLayout()) {
+      activeCardIndex = 0;
+      if (carouselStatus) carouselStatus.textContent = `Project 1 of ${projectCards.length}`;
+      if (previousProjectButton) previousProjectButton.disabled = true;
+      if (nextProjectButton) nextProjectButton.disabled = true;
+      return;
+    }
+
+    if (projectList.scrollLeft <= 2) {
+      activeCardIndex = 0;
+    } else if (projectList.scrollLeft + projectList.clientWidth >= projectList.scrollWidth - 2) {
+      activeCardIndex = projectCards.length - 1;
+    } else {
+      const contentStart = getContentStart();
+      let nearestDistance = Infinity;
+
+      projectCards.forEach((card, index) => {
+        const distance = Math.abs(card.getBoundingClientRect().left - contentStart);
+        if (distance < nearestDistance) {
+          nearestDistance = distance;
+          activeCardIndex = index;
+        }
+      });
+    }
+
+    if (carouselStatus) carouselStatus.textContent = `Project ${activeCardIndex + 1} of ${projectCards.length}`;
+    if (previousProjectButton) previousProjectButton.disabled = activeCardIndex === 0;
+    if (nextProjectButton) nextProjectButton.disabled = activeCardIndex === projectCards.length - 1;
+  };
+
+  const scheduleCarouselUpdate = () => {
+    if (statusFramePending) return;
+    statusFramePending = true;
+    window.requestAnimationFrame(() => {
+      statusFramePending = false;
+      updateCarouselControls();
+    });
+  };
+
+  const goToProject = (index) => {
+    if (!isCarouselLayout()) return;
+    const nextIndex = clamp(index, 0, projectCards.length - 1);
+    projectList.scrollTo({ left: getCardOffset(projectCards[nextIndex]), behavior: scrollBehavior() });
+  };
+
+  previousProjectButton?.addEventListener("click", () => goToProject(activeCardIndex - 1));
+  nextProjectButton?.addEventListener("click", () => goToProject(activeCardIndex + 1));
+  projectList.addEventListener("scroll", scheduleCarouselUpdate, { passive: true });
+  projectList.addEventListener("pointerdown", (event) => {
+    if (event.pointerType !== "mouse" || event.button !== 0 || !isCarouselLayout() || projectList.scrollWidth <= projectList.clientWidth) return;
+    dragPointerId = event.pointerId;
+    dragStartX = event.clientX;
+    dragStartScrollLeft = projectList.scrollLeft;
+    isDragging = false;
+    projectList.setPointerCapture(event.pointerId);
   });
 
-  document.querySelectorAll(".project-art").forEach((art) => {
-    art.addEventListener("pointermove", (event) => {
-      setPointerTilt(art, event, "--tilt-x", "--tilt-y", 10);
-    });
-    art.addEventListener("pointerleave", () => {
-      art.style.removeProperty("--tilt-x");
-      art.style.removeProperty("--tilt-y");
-      art.style.removeProperty("--pointer-x");
-      art.style.removeProperty("--pointer-y");
-    });
+  projectList.addEventListener("pointermove", (event) => {
+    if (event.pointerId !== dragPointerId) return;
+    const distanceX = event.clientX - dragStartX;
+    if (!isDragging && Math.abs(distanceX) < 5) return;
+    isDragging = true;
+    projectList.classList.add("is-dragging");
+    event.preventDefault();
+    projectList.scrollLeft = dragStartScrollLeft - distanceX;
   });
+
+  const stopProjectDrag = (event) => {
+    if (event.pointerId !== dragPointerId) return;
+    if (projectList.hasPointerCapture(event.pointerId)) projectList.releasePointerCapture(event.pointerId);
+    projectList.classList.remove("is-dragging");
+    dragPointerId = null;
+    isDragging = false;
+    updateCarouselControls();
+  };
+
+  projectList.addEventListener("pointerup", stopProjectDrag);
+  projectList.addEventListener("pointercancel", stopProjectDrag);
+  projectList.addEventListener("lostpointercapture", stopProjectDrag);
+  projectList.addEventListener("keydown", (event) => {
+    if (event.target !== projectList || !isCarouselLayout()) return;
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goToProject(activeCardIndex + 1);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goToProject(activeCardIndex - 1);
+    }
+  });
+
+  window.addEventListener("resize", updateCarouselControls, { passive: true });
+  updateCarouselControls();
 }
+
+motionPreference.addEventListener?.("change", (event) => {
+  if (event.matches) revealItems.forEach((item) => item.classList.add("is-visible"));
+  updateScrollMotion();
+});
 
 const contactForm = document.querySelector("#contact-form");
-if (contactForm) {
-  contactForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (!contactForm.reportValidity()) return;
+contactForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!contactForm.reportValidity()) return;
 
-    const formData = new FormData(contactForm);
-    const name = String(formData.get("name") || "").trim();
-    const email = String(formData.get("email") || "").trim();
-    const message = String(formData.get("message") || "").trim();
-    const subject = encodeURIComponent(`Portfolio message from ${name}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-    window.location.href = `mailto:developer@liamhuang.dev?subject=${subject}&body=${body}`;
-  });
-}
+  const formData = new FormData(contactForm);
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const message = String(formData.get("message") || "").trim();
+  const subject = encodeURIComponent(`Portfolio message from ${name}`);
+  const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+  window.location.href = `mailto:developer@liamhuang.dev?subject=${subject}&body=${body}`;
+});
