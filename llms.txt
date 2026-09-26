@@ -1,25 +1,26 @@
-# Liam Huang — Developer
+# Liam Huang
 
-> Freelance web designer and front-end developer building fast, minimal, high-performance websites with semantic HTML, structured CSS, and modern vanilla JavaScript. No frameworks, no cookies, no analytics, no advertising — nothing about visitors is tracked.
-
-## Pages
-
-- [Home](https://liamhuang.dev/): Portfolio introduction with five short sections describing services and availability, selected work (three placeholders), plus a contact form.
-- [Privacy Policy](https://liamhuang.dev/privacy.html): Data handling practices. The only data collected is what a visitor voluntarily sends through the contact form (name, email, message); it is never sold or shared. Fonts are loaded from Google Fonts.
+> Liam Huang is a creative developer who designs and builds websites and front-end interfaces.
 
 ## Services
 
-- Freelance web design with a focus on high-performance user interfaces
-- Semantic HTML, structured CSS, and modern JavaScript without unnecessary frameworks
-- Bridging visual design and fluid interaction: pixel-perfect execution, intuitive navigation, cross-browser compatibility
-- Full frontend process: layout prototyping through production deployment, performance optimization, legacy UI modernization, stable frame rates during animation
-- Currently available for freelance contracts, custom UI design, and front-end development partnerships
+- Custom website design and development
+- Responsive landing pages
+- Front-end interface design and implementation
+- Interactive web experiences
 
-## Selected Work
+The portfolio is a static site built with HTML, CSS, and JavaScript. No business location or service region is listed on the site.
 
-- Three minimalist placeholder projects on the homepage — see https://liamhuang.dev/#work (real case studies coming soon)
+## Pages
 
-## Contact
+- Homepage: https://liamhuang.dev/
+- About: https://liamhuang.dev/#about
+- Work: https://liamhuang.dev/#work
+- Contact: https://liamhuang.dev/#contact
+- Email: developer@liamhuang.dev
+- Privacy: https://liamhuang.dev/privacy.html
+- Accessibility: https://liamhuang.dev/accessibility.html
 
-- Email: Developer@liamhuang.dev
-- Contact form: https://liamhuang.dev/#contact
+## Portfolio note
+
+The three project previews are website or interface concepts, not completed client projects.
