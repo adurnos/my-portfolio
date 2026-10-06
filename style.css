@@ -61,12 +61,23 @@ main:focus { outline: none; }
 .site-header a:hover { color: var(--accent); }
 .site-header a:focus-visible { outline-color: var(--accent); }
 .hero {
+  position: relative;
   min-height: 100svh;
   padding: 9rem var(--gutter) 7rem;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+.hero-location {
+  position: absolute;
+  left: calc(var(--gutter) + clamp(.75rem, 1.5vw, 1.5rem));
+  bottom: clamp(2.5rem, 4vw, 4rem);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  line-height: 1.4;
+  text-align: left;
 }
 .hero-composition {
   position: relative;
@@ -114,6 +125,8 @@ h3 { font-size: clamp(1.25rem, 1.65vw, 1.875rem); font-weight: 700; letter-spaci
 .reveal-word { color: #d9d6d2; }
 .reveal-word.is-read { color: var(--ink); }
 .projects-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 3rem); max-width: 62rem; margin: clamp(3rem, 6vw, 6rem) auto 0; }
+.project { transform-style: preserve-3d; }
+.motion-word { display: inline-block; }
 .project-preview { position: relative; display: flex; align-items: center; justify-content: center; aspect-ratio: 16 / 10; padding: 1.5rem; background: var(--surface); transition: transform 350ms cubic-bezier(.22, 1, .36, 1), background-color 250ms ease; }
 .project-preview:hover, .project-preview:focus-visible { transform: translateY(-10px) scale(1.015); background: #e1e5ec; }
 .preview-label { position: absolute; left: 1.5rem; right: 1.5rem; top: 1.5rem; font-size: .625rem; letter-spacing: .035em; }
@@ -136,8 +149,6 @@ input, textarea { display: block; width: 100%; padding: 1.125rem; background: #e
 textarea { resize: vertical; min-height: 10rem; }
 .honeypot { display: none; }
 .form-bottom { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-.form-bottom p { font-size: .75rem; color: var(--muted); line-height: 1.7; }
-.form-bottom p a { text-decoration: underline; text-underline-offset: .2em; }
 .form-bottom button { background: var(--ink); color: var(--paper); padding: 1.125rem 1.5rem; font-weight: 700; font-size: .75rem; min-height: 48px; transition: background-color 220ms ease, transform 250ms ease; }
 .form-bottom button:hover { background: var(--accent); transform: translateY(-4px); }
 .form-bottom button:disabled { cursor: wait; }

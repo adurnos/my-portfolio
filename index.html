@@ -4,22 +4,26 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f4ef">
-  <meta name="description" content="Liam Huang builds custom websites and web apps that help businesses stand out.">
+  <meta name="description" content="Boston-based developer Liam Huang builds clear, custom websites for businesses.">
   <meta name="author" content="Liam Huang">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Liam Huang - Website Developer">
-  <meta property="og:description" content="Custom websites, websites, and UI/UX systems.">
+  <meta property="og:description" content="Custom websites for businesses, designed to communicate clearly and make the next step simple.">
   <meta property="og:url" content="https://liamhuang.dev/">
+  <meta property="og:site_name" content="Liam Huang">
+  <meta property="og:locale" content="en_US">
   <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Liam Huang - Website Developer">
+  <meta name="twitter:description" content="Custom websites for businesses, designed to communicate clearly and make the next step simple.">
   <link rel="canonical" href="https://liamhuang.dev/">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 12h48L32 54Z' fill='%23223B64'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 12h48L32 54Z' fill='%23223B64' stroke='%23fff' stroke-width='6' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400..700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=20261006-final">
   <script defer src="gsap.min.js"></script>
   <script defer src="ScrollTrigger.min.js"></script>
-  <script defer src="main.js"></script>
+  <script defer src="main.js?v=20261006-boston-overlap"></script>
   <title>Liam Huang - Website Developer</title>
 </head>
 <body>
@@ -39,14 +43,15 @@
           <path class="symbol-face" d="M14 18H82Q86 18 84 22L51 81Q48 86 45 81L11 22Q9 18 14 18Z"/>
         </svg>
       </div>
+      <p class="hero-location">BASED IN BOSTON</p>
     </section>
 
     <section class="section about" aria-labelledby="about-title">
       <h2 id="about-title">HEY!</h2>
       <div class="about-copy">
-        <p class="scroll-copy">I'm Liam, and I'm a website developer based in Boston. I build clean websites for businesses that want to stand out from the crowd. I believe in keeping things intentional. By focusing strictly on what matters, your message becomes completely clear and impossible to miss.</p>
-        <p class="scroll-copy">My job is to make your website fast, simple to use, and great to look at. I stick to the basics: solid layouts, clean typography, and quiet, smooth movements. You don't need a million distracting features to look professional; you just need your site to work perfectly and look intentional.</p>
-        <p class="scroll-copy">If your business needs a website that cuts through the online noise and delivers your message clearly, feel free to send a message below.</p>
+        <p class="scroll-copy">I'm Liam, a Boston-based website developer. I build custom websites that help businesses explain what they do and guide visitors toward a clear next step.</p>
+        <p class="scroll-copy">My approach is straightforward: clear page structure, readable typography, responsive layouts, and purposeful interactions. I leave out features that distract from what your business needs to communicate.</p>
+        <p class="scroll-copy">Have a website project in mind? Email me or send a message using the form below.</p>
       </div>
     </section>
 
@@ -73,16 +78,16 @@
     <section class="section contact" aria-labelledby="contact-title">
       <h2 id="contact-title">CONTACT</h2>
       <p class="contact-intro"><a href="mailto:developer@liamhuang.dev">developer@liamhuang.dev</a></p>
-      <form class="contact-form" action="https://formsubmit.co/developer@liamhuang.dev" method="post" aria-describedby="form-note">
+      <form class="contact-form" action="https://formsubmit.co/developer@liamhuang.dev" method="post">
         <input type="hidden" name="_subject" value="New portfolio enquiry | liamhuang.dev">
         <input type="hidden" name="_template" value="table">
         <div class="honeypot" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" name="_honey" type="text" tabindex="-1" autocomplete="off"></div>
         <div class="form-row">
-          <div class="field"><label for="name">Name <span>(required)</span></label><input id="name" name="name" type="text" autocomplete="name" maxlength="120" required></div>
-          <div class="field"><label for="email">Email <span>(required)</span></label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
+          <div class="field"><label for="name">Name <span>(required)</span></label><input id="name" name="name" type="text" autocomplete="name" maxlength="120" placeholder="Enter your name" required></div>
+          <div class="field"><label for="email">Email <span>(required)</span></label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="Enter your email" required></div>
         </div>
-        <div class="field"><label for="message">Message <span>(required)</span></label><textarea id="message" name="message" rows="5" maxlength="5000" required></textarea></div>
-        <div class="form-bottom"><p id="form-note">Used only to reply. <a href="privacy.html">Privacy policy</a>.</p><button type="submit">SEND MESSAGE</button></div>
+        <div class="field"><label for="message">Message <span>(required)</span></label><textarea id="message" name="message" rows="5" maxlength="5000" placeholder="Tell me about your project" required></textarea></div>
+        <div class="form-bottom"><button type="submit">SEND MESSAGE</button></div>
         <p class="form-status" role="status"></p>
       </form>
     </section>

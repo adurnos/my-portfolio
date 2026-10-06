@@ -5,12 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f4ef">
   <meta name="description" content="Accessibility features, WCAG 2.2 AA goals, and how to report an accessibility issue on Liam Huang's portfolio.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Accessibility Statement | Liam Huang">
+  <meta property="og:description" content="Accessibility features, WCAG 2.2 AA goals, and how to report an accessibility issue on Liam Huang's portfolio.">
+  <meta property="og:url" content="https://liamhuang.dev/accessibility.html">
+  <meta property="og:site_name" content="Liam Huang">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Accessibility Statement | Liam Huang">
+  <meta name="twitter:description" content="Accessibility features, WCAG 2.2 AA goals, and how to report an accessibility issue on Liam Huang's portfolio.">
   <link rel="canonical" href="https://liamhuang.dev/accessibility.html">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 12h48L32 54Z' fill='%23223B64' stroke='%23fff' stroke-width='6' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script defer src="main.js"></script>
+  <link rel="stylesheet" href="style.css?v=20261006-final">
+  <script defer src="main.js?v=20261006-boston-overlap"></script>
   <title>Accessibility Statement | Liam Huang</title>
 </head>
 <body>
@@ -18,7 +28,7 @@
   <header class="site-header"><a class="wordmark" href="index.html">LIAM HUANG</a></header>
   <main class="legal-page" id="main" tabindex="-1">
     <h1>ACCESSIBILITY<br>STATEMENT</h1>
-    <p class="updated">Last updated: October 5, 2026</p>
+    <p class="updated">Last updated: October 6, 2026</p>
     <p>I want this website to be usable by as many people as possible, including people who use assistive technology. Accessibility is part of the design and development process, not an optional layer.</p>
     <h2>Conformity goal</h2>
     <p>The target is the Web Content Accessibility Guidelines (WCAG) 2.2 at Level AA. This is a commitment and design goal, not a claim of certified or fully audited conformity. A comprehensive independent accessibility audit has not been completed.</p>
@@ -28,16 +38,16 @@
       <li>Keyboard-operable links and controls with visible focus indicators.</li>
       <li>Persistent contact form labels, identified required fields, native validation, and status announcements.</li>
       <li>Responsive layouts and fluid typography that support browser zoom and narrow viewports.</li>
-      <li>Warm near-black body text with grain and a reading-order, whole-word About reveal.</li>
+      <li>Warm near-black body text, a subtle grain texture, and a whole-word About text reveal that follows reading order.</li>
       <li>The film-grain texture is static and never blocks text selection or controls.</li>
       <li>A native cursor during keyboard navigation, with a custom pointer for mouse input. Touch scrolling remains native. Desktop wheel scrolling glides to a stop, while keyboard scrolling, zoom gestures, and form controls retain native behavior.</li>
       <li>Core content and the contact form remain available without JavaScript or if animation resources fail to load.</li>
     </ul>
     <h2>Known limitations</h2>
     <p>Unrevealed About words use light gray (#D9D6D2), which does not meet WCAG AA text contrast on the page background. Words switch to warm near-black in reading order as you scroll. With JavaScript disabled or in print, the full text uses the default warm near-black color.</p>
-    <p>With reduced motion enabled, scroll glide and entrance, rotation, and positional scroll animations are disabled. The About text still reveals one word at a time because color changes are central to this design. The custom pointer tracks directly, and hover transitions are nearly instant. Visitors who are sensitive to even this limited motion may prefer disabling motion or using a browser or operating system setting that blocks animation.</p>
+    <p>With reduced motion enabled, scroll glide, About pinning and word reveal, entrance animations, card flips, and positional scroll animations are disabled. The About text is fully visible in warm near-black. The custom pointer uses reduced smoothing, and hover transitions are nearly instant. Visitors who are sensitive to even this limited motion may prefer disabling motion or using a browser or operating system setting that blocks animation.</p>
     <p>The contact form continues to FormSubmit, whose spam verification and confirmation pages are controlled by a third party. Their accessibility can vary. You can bypass the form and email <a href="mailto:developer@liamhuang.dev">developer@liamhuang.dev</a> directly.</p>
-    <p>The fixed header uses warm near-black text above page content. It follows system colors in forced-colors mode. Motion does not convey information unavailable in the text. Project previews are explicitly labeled placeholders.</p>
+    <p>The fixed header uses warm near-black text above page content. In forced-colors mode, the custom pointer is disabled and the fixed header follows system colors. Motion does not convey information unavailable in the text. Project previews are explicitly labeled placeholders.</p>
     <h2>Compatibility</h2>
     <p>The site uses standard HTML, CSS, and JavaScript and is intended for current versions of major browsers. Screen reader behavior depends on the browser and assistive technology combination. Browser zoom, keyboard navigation, and operating-system reduced-motion settings can be used without special site controls.</p>
     <h2>Feedback and assistance</h2>

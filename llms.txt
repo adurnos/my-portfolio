@@ -1,20 +1,20 @@
 # Liam Huang
 
-> Liam Huang is an independent website developer building distinctive websites, custom web apps, and considered digital experiences for businesses.
+> Liam Huang is a Boston-based website developer who builds custom websites for businesses, with a focus on clear communication, responsive layouts, and purposeful interactions.
 
-Core proposition: I make businesses stand out from the sea of other businesses.
+Core proposition: Make it easy for visitors to understand what a business offers and what to do next.
 
 ## Website
 
-- [Portfolio](https://liamhuang.dev/): Single-page introduction, About section covering UI and UX development, project placeholders, and contact form.
+- [Portfolio](https://liamhuang.dev/): Single-page introduction, About section describing the approach to website design and development, project placeholders, and contact form.
 - [Privacy policy](https://liamhuang.dev/privacy.html): Personal information handling and third-party processors.
 - [Accessibility statement](https://liamhuang.dev/accessibility.html): Accessibility features, WCAG 2.2 AA goals, and known limitations.
 
 ## Development focus
 
-- Custom Web Apps: Business-specific applications and focused interfaces.
-- Interaction & Performance: Fast pages and purposeful interactions.
-- UI/UX Systems: Consistent, usable interfaces and visual systems.
+- Custom Websites: Responsive business websites with clear structure and messaging.
+- Purposeful Interactions: Useful motion and interaction without unnecessary features.
+- Web Apps: Focused, business-specific interfaces where a project calls for them.
 
 ## Contact and identity
 
@@ -30,4 +30,4 @@ The two featured project slots are explicitly labeled placeholders. Project 01 h
 
 ## Technical details
 
-Static HTML5, CSS3, and vanilla JavaScript. Work Sans is provided by Google Fonts. Locally hosted GSAP and ScrollTrigger provide motion. Reduced-motion preferences disable major movement and desktop wheel glide while retaining the word-by-word About color reveal. Core content remains warm near-black and readable without JavaScript. FormSubmit processes contact form submissions. The site is suitable for static hosting on Vercel.
+Static HTML5, CSS3, and vanilla JavaScript. Work Sans is provided by Google Fonts. Locally hosted GSAP and ScrollTrigger provide motion. With normal motion preferences, the About section pins at the viewport center during its reversible word-by-word color reveal. Selected Work words fade in, project cards flip into place, and the contact form fades upward. Reduced-motion preferences disable these animations, About pinning, and desktop wheel glide; text remains fully visible. Core content remains warm near-black and readable without JavaScript. FormSubmit processes contact form submissions. The site is suitable for static hosting on Vercel.

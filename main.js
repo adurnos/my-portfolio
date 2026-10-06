@@ -4,6 +4,7 @@
   const root = document.documentElement;
   const finePointer = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const forcedColors = window.matchMedia('(forced-colors: active)');
   const desktopScroll = finePointer;
 
   let disposeScroll = () => {};
@@ -187,8 +188,9 @@
         } catch {
           throw new Error('The form service returned an unreadable response.');
         }
-        if (!response.ok || result.success === false || result.success === 'false') {
-          throw new Error(result.message || 'The form service could not send your message.');
+        if (!response.ok || (result?.success !== true && result?.success !== 'true')) {
+          const message = typeof result?.message === 'string' ? result.message : '';
+          throw new Error(message || 'The form service could not send your message.');
         }
         form.reset();
         status.textContent = 'Thanks. Your message has been sent.';
@@ -233,15 +235,20 @@
     if (words.length) {
       let revealed = 0;
       const renderWords = (progress) => {
-        const next = Math.min(words.length, Math.floor(progress * words.length + 1e-7));
+        const next = Math.min(words.length, Math.round(progress * words.length));
         while (revealed < next) words[revealed++].classList.add('is-read');
         while (revealed > next) words[--revealed].classList.remove('is-read');
       };
 
       wordTrigger = ScrollTrigger.create({
-        trigger: '.about-copy',
-        start: 'top 80%',
-        end: 'bottom 35%',
+        trigger: '.about',
+        start: 'center center',
+        end: () => `+=${Math.max(window.innerHeight * 1.2, words.length * 16)}`,
+        pin: true,
+        pinSpacing: true,
+        anticipatePin: 1,
+        refreshPriority: 1,
+        invalidateOnRefresh: true,
         onUpdate: (self) => renderWords(self.progress),
         onRefresh: (self) => renderWords(self.progress),
       });
@@ -255,6 +262,89 @@
     };
   };
 
+  const setupSelectedWork = (gsap) => {
+    const originalText = [];
+    const wrapWords = (element) => {
+      const text = element.textContent;
+      const fragment = document.createDocumentFragment();
+      text.split(/(\s+)/).forEach((part) => {
+        if (/^\s+$/.test(part)) {
+          fragment.append(document.createTextNode(part));
+        } else if (part) {
+          const word = document.createElement('span');
+          word.className = 'motion-word';
+          word.textContent = part;
+          fragment.append(word);
+        }
+      });
+      element.replaceChildren(fragment);
+      originalText.push({ element, text });
+      return Array.from(element.querySelectorAll('.motion-word'));
+    };
+
+    const heading = document.querySelector('.work h2');
+    if (heading) {
+      const words = wrapWords(heading);
+      gsap.fromTo(words, { y: 14, opacity: 0 }, {
+        y: 0,
+        opacity: 1,
+        duration: .8,
+        stagger: .14,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: heading, start: 'top 85%', toggleActions: 'play none none reverse' },
+      });
+    }
+
+    gsap.utils.toArray('.project').forEach((project, index) => {
+      const captionWords = [];
+      project.querySelectorAll('.project-caption h3, .project-caption p').forEach((element) => {
+        captionWords.push(...wrapWords(element));
+      });
+      gsap.fromTo(project, {
+        y: 28,
+        opacity: 0,
+        rotationY: index ? 12 : -12,
+        rotationX: 55,
+        transformOrigin: '50% 100%',
+        transformPerspective: 900,
+      }, {
+        y: 0,
+        opacity: 1,
+        rotationY: 0,
+        rotationX: 0,
+        duration: 1.2,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: project, start: 'top 88%', toggleActions: 'play none none reverse' },
+      });
+      gsap.fromTo(captionWords, { y: 10, opacity: 0 }, {
+        y: 0,
+        opacity: 1,
+        duration: .7,
+        stagger: .055,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: project, start: 'top 84%', toggleActions: 'play none none reverse' },
+      });
+    });
+
+    return () => {
+      originalText.forEach(({ element, text }) => {
+        element.textContent = text;
+      });
+    };
+  };
+
+  const setupContactReveal = (gsap) => {
+    const form = document.querySelector('.contact-form');
+    if (!form) return;
+    gsap.fromTo(form, { y: 34, opacity: 0 }, {
+      y: 0,
+      opacity: 1,
+      duration: .9,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: form, start: 'top 88%', toggleActions: 'play none none reverse' },
+    });
+  };
+
   let entrancePlayed = false;
 
   if (window.gsap && window.ScrollTrigger) {
@@ -265,11 +355,13 @@
     media.add('(prefers-reduced-motion: no-preference)', () => {
       if (!entrancePlayed) {
         entrancePlayed = true;
-        gsap.fromTo('.hero h1 span', { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 1.6, stagger: .16, ease: 'power3.out', clearProps: 'opacity' });
-        gsap.fromTo('.wordmark', { opacity: 0 }, { opacity: 1, duration: 1.1, ease: 'power2.out', clearProps: 'opacity' });
-        gsap.fromTo('.hero-symbol', { opacity: 0 }, { opacity: 1, duration: 1.4, stagger: .2, delay: .15, ease: 'power2.out', clearProps: 'opacity' });
+        const entrance = gsap.timeline();
+        entrance.fromTo('.hero h1 span', { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 3.6, stagger: .3, ease: 'sine.out', clearProps: 'opacity' }, 0);
+        entrance.fromTo('.wordmark', { opacity: 0 }, { opacity: 1, duration: 3, ease: 'sine.out', clearProps: 'opacity' }, 0);
+        entrance.fromTo('.hero-symbol', { opacity: 0 }, { opacity: 1, duration: 3.4, stagger: .3, ease: 'sine.out', clearProps: 'opacity' }, .25);
+        entrance.fromTo('.hero-location', { opacity: 0 }, { opacity: 1, duration: 2.4, ease: 'sine.out', clearProps: 'opacity' }, .6);
       } else {
-        gsap.set(['.hero h1 span', '.wordmark', '.hero-symbol'], { clearProps: 'all' });
+        gsap.set(['.hero h1 span', '.wordmark', '.hero-symbol', '.hero-location'], { clearProps: 'all' });
       }
       gsap.utils.toArray('.hero-symbol').forEach((symbol, index) => {
         gsap.fromTo(symbol, { rotation: 0, rotationY: -16, rotationX: 12, y: 0 }, {
@@ -281,7 +373,20 @@
           scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .35 },
         });
       });
-      gsap.utils.toArray('.section h2').forEach((heading) => {
+      const cleanupWordReveal = setupWordReveal(gsap, ScrollTrigger);
+      gsap.fromTo('.about h2', { y: 45, scale: .96 }, {
+        y: 0,
+        scale: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.about',
+          start: 'top bottom',
+          end: () => ScrollTrigger.getAll().find((trigger) => trigger.pin === document.querySelector('.about')).start - 40,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
+      gsap.utils.toArray('.contact h2').forEach((heading) => {
         gsap.fromTo(heading, { y: 45, scale: .96 }, {
           y: 0,
           scale: 1,
@@ -289,17 +394,19 @@
           scrollTrigger: { trigger: heading, start: 'top 95%', end: 'top 50%', scrub: .25 },
         });
       });
-      gsap.utils.toArray('.project').forEach((project, index) => {
-        gsap.fromTo(project, { y: index ? 50 : 30 }, {
-          y: 0,
-          ease: 'none',
-          scrollTrigger: { trigger: project, start: 'top 95%', end: 'top 55%', scrub: .3 },
-        });
-      });
-      return setupWordReveal(gsap, ScrollTrigger);
+      const cleanupSelectedWork = setupSelectedWork(gsap);
+      setupContactReveal(gsap);
+      return () => {
+        cleanupWordReveal();
+        cleanupSelectedWork();
+      };
     });
 
-    media.add('(prefers-reduced-motion: reduce)', () => setupWordReveal(gsap, ScrollTrigger));
+    media.add('(prefers-reduced-motion: reduce)', () => {
+      gsap.set(['.hero h1 span', '.wordmark', '.hero-symbol', '.hero-location', '.work h2', '.project', '.project-caption h3', '.project-caption p', '.contact-form'], {
+        clearProps: 'all',
+      });
+    });
     if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
   }
@@ -313,7 +420,7 @@
     root.classList.remove('custom-cursor');
     cursor.classList.add('is-hidden');
     cursor.classList.remove('is-hovering');
-    if (!finePointer.matches || window.matchMedia('(forced-colors: active)').matches) return;
+    if (!finePointer.matches || forcedColors.matches) return;
 
     let frame = 0;
     let initialized = false;
@@ -405,4 +512,5 @@
   configureCursor();
   finePointer.addEventListener('change', configureCursor);
   reducedMotion.addEventListener('change', configureCursor);
+  forcedColors.addEventListener('change', configureCursor);
 })();
