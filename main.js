@@ -5,7 +5,10 @@
   const finePointer = window.matchMedia('(any-hover: hover) and (any-pointer: fine)');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const forcedColors = window.matchMedia('(forced-colors: active)');
-  const desktopScroll = finePointer;
+  // Page-wheel smoothing is for pointer-driven desktops only. Touch devices never fire wheel
+  // events, so gate on the *primary* input being a mouse/trackpad instead of on any attached
+  // device (any-pointer/any-hover also match a hovering stylus on a phone).
+  const desktopScroll = window.matchMedia('(hover: hover) and (pointer: fine)');
 
   let disposeScroll = () => {};
   const configureScroll = () => {
@@ -60,7 +63,10 @@
       }
       let element = event.target instanceof Element ? event.target : null;
       while (element && element !== document.body) {
-        if (element.matches('input, textarea, select, [contenteditable="true"]')) {
+        // Only hand the wheel back to a form field the user is actually editing. Bailing out on
+        // anything merely under the pointer killed the glide whenever the contact form was under
+        // the cursor, which is exactly what happens at the bottom of the page.
+        if (element === document.activeElement && element.matches('input, textarea, select, [contenteditable="true"]')) {
           stop();
           return;
         }
@@ -333,6 +339,35 @@
     };
   };
 
+  const setupSectionSymbols = (gsap) => {
+    const symbols = gsap.utils.toArray('.section-symbol');
+    const headingFor = (symbol) => symbol.closest('.section-heading') || symbol.parentElement;
+
+    symbols.forEach((symbol) => {
+      gsap.fromTo(symbol, { opacity: 0 }, {
+        opacity: 1,
+        duration: .8,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: headingFor(symbol), start: 'top 85%', toggleActions: 'play none none reverse' },
+      });
+    });
+
+    const spinMedia = gsap.matchMedia();
+    spinMedia.add('(min-width: 361px)', () => {
+      symbols.forEach((symbol) => {
+        const mirrored = symbol.classList.contains('section-symbol-right');
+        gsap.fromTo(symbol, { rotation: 0, rotationY: -16, rotationX: 12, y: 0 }, {
+          rotation: mirrored ? -360 : 360,
+          rotationY: mirrored ? 28 : -32,
+          rotationX: -12,
+          y: mirrored ? -45 : 45,
+          ease: 'none',
+          scrollTrigger: { trigger: headingFor(symbol), start: 'top bottom', end: 'bottom top', scrub: .35 },
+        });
+      });
+    });
+  };
+
   const setupContactReveal = (gsap) => {
     const form = document.querySelector('.contact-form');
     if (!form) return;
@@ -356,25 +391,29 @@
       if (!entrancePlayed) {
         entrancePlayed = true;
         const entrance = gsap.timeline();
-        entrance.fromTo('.hero h1 span', { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 3.6, stagger: .3, ease: 'sine.out', clearProps: 'opacity' }, 0);
-        entrance.fromTo('.wordmark', { opacity: 0 }, { opacity: 1, duration: 3, ease: 'sine.out', clearProps: 'opacity' }, 0);
-        entrance.fromTo('.hero-symbol', { opacity: 0 }, { opacity: 1, duration: 3.4, stagger: .3, ease: 'sine.out', clearProps: 'opacity' }, .25);
-        entrance.fromTo('.hero-location', { opacity: 0 }, { opacity: 1, duration: 2.4, ease: 'sine.out', clearProps: 'opacity' }, .6);
+        entrance.fromTo('.hero h1 span', { y: 32, opacity: 0 }, { y: 0, opacity: 1, duration: 1.8, stagger: .15, ease: 'sine.out', clearProps: 'opacity' }, 0);
+        entrance.fromTo('.wordmark', { opacity: 0 }, { opacity: 1, duration: 1.5, ease: 'sine.out', clearProps: 'opacity' }, 0);
+        entrance.fromTo('.hero-symbol', { opacity: 0 }, { opacity: 1, duration: 1.7, stagger: .15, ease: 'sine.out', clearProps: 'opacity' }, .125);
+        entrance.fromTo('.hero-location', { opacity: 0 }, { opacity: 1, duration: 1.2, ease: 'sine.out', clearProps: 'opacity' }, .3);
       } else {
         gsap.set(['.hero h1 span', '.wordmark', '.hero-symbol', '.hero-location'], { clearProps: 'all' });
       }
-      gsap.utils.toArray('.hero-symbol').forEach((symbol, index) => {
-        gsap.fromTo(symbol, { rotation: 0, rotationY: -16, rotationX: 12, y: 0 }, {
-          rotation: index ? -360 : 360,
-          rotationY: index ? 28 : -32,
-          rotationX: -12,
-          y: index ? -45 : 45,
-          ease: 'none',
-          scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .35 },
+      const spinOnScroll = (selector, trigger, start = 'top top', end = 'bottom top') => {
+        gsap.utils.toArray(selector).forEach((symbol, index) => {
+          gsap.fromTo(symbol, { rotation: 0, rotationY: -16, rotationX: 12, y: 0 }, {
+            rotation: index ? -360 : 360,
+            rotationY: index ? 28 : -32,
+            rotationX: -12,
+            y: index ? -45 : 45,
+            ease: 'none',
+            scrollTrigger: { trigger, start, end, scrub: .35 },
+          });
         });
-      });
+      };
+      spinOnScroll('.hero-symbol', '.hero');
+      setupSectionSymbols(gsap);
       const cleanupWordReveal = setupWordReveal(gsap, ScrollTrigger);
-      gsap.fromTo('.about h2', { y: 45, scale: .96 }, {
+      gsap.fromTo('.about h2', { y: 58, scale: .93 }, {
         y: 0,
         scale: 1,
         ease: 'none',
@@ -403,7 +442,7 @@
     });
 
     media.add('(prefers-reduced-motion: reduce)', () => {
-      gsap.set(['.hero h1 span', '.wordmark', '.hero-symbol', '.hero-location', '.work h2', '.project', '.project-caption h3', '.project-caption p', '.contact-form'], {
+      gsap.set(['.hero h1 span', '.wordmark', '.hero-symbol', '.section-symbol', '.hero-location', '.work h2', '.project', '.project-caption h3', '.project-caption p', '.contact-form'], {
         clearProps: 'all',
       });
     });
