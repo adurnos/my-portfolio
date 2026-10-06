@@ -1,43 +1,48 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f4f0e6" />
-    <meta name="description" content="Accessibility information and contact details for Liam Huang’s portfolio website." />
-    <meta name="author" content="Liam Huang" />
-    <link rel="canonical" href="https://liamhuang.dev/accessibility.html" />
-    <title>Accessibility | Liam Huang</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-    <script src="script.js" defer></script>
-  </head>
-  <body>
-    <a class="skip-link" href="#main">Skip to content</a>
-    <header class="site-header">
-      <a class="wordmark" href="index.html" aria-label="Liam Huang, home">Liam Huang</a>
-      <nav aria-label="Main navigation"><a href="index.html#about">About</a><a href="index.html#work">Work</a><a href="index.html#contact">Contact</a></nav>
-    </header>
-    <main class="policy section" id="main">
-      <p class="section-number">SITE INFORMATION</p>
-      <h1>Accessibility</h1>
-      <p class="policy-lede">Last updated: September 2026</p>
-      <h2>Our commitment</h2>
-      <p>I want this portfolio to be usable by as many people as possible. I am continuing to improve its accessibility. This statement describes features currently built into the site; it is not a claim of certification or full conformance with a particular standard.</p>
-      <h2>Features</h2>
-      <ul>
-        <li>Semantic page regions, headings, and labeled navigation.</li>
-        <li>A skip link, visible keyboard focus, and labeled contact fields.</li>
-        <li>Responsive layouts for smaller screens.</li>
-        <li>A reduced-motion setting that disables the decorative motion effects.</li>
-      </ul>
-      <h2>Known limitations</h2>
-      <p>The site has not yet received a formal accessibility audit or testing across all assistive technologies. Some decorative project previews use dense visual detail and may be harder to interpret at high zoom or with limited vision. The contact form relies on the visitor’s email application; it does not send messages directly from the website.</p>
-      <h2>Feedback and assistance</h2>
-      <p>If you encounter a barrier or need information in another format, email <a href="mailto:developer@liamhuang.dev">developer@liamhuang.dev</a>. Please describe the page and issue you experienced. I will do my best to respond and provide an accessible alternative.</p>
-    </main>
-    <footer class="site-footer"><span>© <span id="year"></span> Liam Huang</span><nav aria-label="Legal information"><a href="privacy.html">Privacy</a><a href="accessibility.html" aria-current="page">Accessibility</a></nav></footer>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f4ef">
+  <meta name="description" content="Accessibility features, WCAG 2.2 AA goals, and how to report an accessibility issue on Liam Huang's portfolio.">
+  <link rel="canonical" href="https://liamhuang.dev/accessibility.html">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="main.js"></script>
+  <title>Accessibility Statement | Liam Huang</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><a class="wordmark" href="index.html">LIAM HUANG</a></header>
+  <main class="legal-page" id="main" tabindex="-1">
+    <h1>ACCESSIBILITY<br>STATEMENT</h1>
+    <p class="updated">Last updated: October 5, 2026</p>
+    <p>I want this website to be usable by as many people as possible, including people who use assistive technology. Accessibility is part of the design and development process, not an optional layer.</p>
+    <h2>Conformity goal</h2>
+    <p>The target is the Web Content Accessibility Guidelines (WCAG) 2.2 at Level AA. This is a commitment and design goal, not a claim of certified or fully audited conformity. A comprehensive independent accessibility audit has not been completed.</p>
+    <h2>Features implemented</h2>
+    <ul>
+      <li>Semantic headings and landmarks, a skip-to-content link, and a logical reading order.</li>
+      <li>Keyboard-operable links and controls with visible focus indicators.</li>
+      <li>Persistent contact form labels, identified required fields, native validation, and status announcements.</li>
+      <li>Responsive layouts and fluid typography that support browser zoom and narrow viewports.</li>
+      <li>Warm near-black body text with grain and a reading-order, whole-word About reveal.</li>
+      <li>The film-grain texture is static and never blocks text selection or controls.</li>
+      <li>A native cursor during keyboard navigation, with a custom pointer for mouse input. Touch scrolling remains native. Desktop wheel scrolling glides to a stop, while keyboard scrolling, zoom gestures, and form controls retain native behavior.</li>
+      <li>Core content and the contact form remain available without JavaScript or if animation resources fail to load.</li>
+    </ul>
+    <h2>Known limitations</h2>
+    <p>Unrevealed About words use light gray (#D9D6D2), which does not meet WCAG AA text contrast on the page background. Words switch to warm near-black in reading order as you scroll. With JavaScript disabled or in print, the full text uses the default warm near-black color.</p>
+    <p>With reduced motion enabled, scroll glide and entrance, rotation, and positional scroll animations are disabled. The About text still reveals one word at a time because color changes are central to this design. The custom pointer tracks directly, and hover transitions are nearly instant. Visitors who are sensitive to even this limited motion may prefer disabling motion or using a browser or operating system setting that blocks animation.</p>
+    <p>The contact form continues to FormSubmit, whose spam verification and confirmation pages are controlled by a third party. Their accessibility can vary. You can bypass the form and email <a href="mailto:developer@liamhuang.dev">developer@liamhuang.dev</a> directly.</p>
+    <p>The fixed header uses warm near-black text above page content. It follows system colors in forced-colors mode. Motion does not convey information unavailable in the text. Project previews are explicitly labeled placeholders.</p>
+    <h2>Compatibility</h2>
+    <p>The site uses standard HTML, CSS, and JavaScript and is intended for current versions of major browsers. Screen reader behavior depends on the browser and assistive technology combination. Browser zoom, keyboard navigation, and operating-system reduced-motion settings can be used without special site controls.</p>
+    <h2>Feedback and assistance</h2>
+    <p>If anything prevents you from using the site, email <a href="mailto:developer@liamhuang.dev">developer@liamhuang.dev</a>. If possible, include the page, what you were trying to do, and the browser or assistive technology involved. You do not need to disclose a disability. I will review the issue and work toward a practical solution or provide the information another way.</p>
+  </main>
+  <footer class="site-footer"><p>© <span data-year>2026</span> Liam Huang</p><a class="github-link" href="https://github.com/adurnos" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only"> (opens in a new tab)</span></a><nav aria-label="Legal"><a href="privacy.html">Privacy</a><a href="accessibility.html" aria-current="page">Accessibility</a></nav></footer>
+</body>
 </html>

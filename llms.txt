@@ -1,26 +1,33 @@
 # Liam Huang
 
-> Liam Huang is a creative developer who designs and builds websites and front-end interfaces.
+> Liam Huang is an independent website developer building distinctive websites, custom web apps, and considered digital experiences for businesses.
 
-## Services
+Core proposition: I make businesses stand out from the sea of other businesses.
 
-- Custom website design and development
-- Responsive landing pages
-- Front-end interface design and implementation
-- Interactive web experiences
+## Website
 
-The portfolio is a static site built with HTML, CSS, and JavaScript. No business location or service region is listed on the site.
+- [Portfolio](https://liamhuang.dev/): Single-page introduction, About section covering UI and UX development, project placeholders, and contact form.
+- [Privacy policy](https://liamhuang.dev/privacy.html): Personal information handling and third-party processors.
+- [Accessibility statement](https://liamhuang.dev/accessibility.html): Accessibility features, WCAG 2.2 AA goals, and known limitations.
 
-## Pages
+## Development focus
 
-- Homepage: https://liamhuang.dev/
-- About: https://liamhuang.dev/#about
-- Work: https://liamhuang.dev/#work
-- Contact: https://liamhuang.dev/#contact
+- Custom Web Apps: Business-specific applications and focused interfaces.
+- Interaction & Performance: Fast pages and purposeful interactions.
+- UI/UX Systems: Consistent, usable interfaces and visual systems.
+
+## Contact and identity
+
+- Name: Liam Huang
+- Role: Website Developer
 - Email: developer@liamhuang.dev
-- Privacy: https://liamhuang.dev/privacy.html
-- Accessibility: https://liamhuang.dev/accessibility.html
+- [GitHub](https://github.com/adurnos): Public code and creator profile.
+- Creator mark: The inverted triangle, the elemental symbol for water.
 
-## Portfolio note
+## Project status
 
-The three project previews are website or interface concepts, not completed client projects.
+The two featured project slots are explicitly labeled placeholders. Project 01 has the functional summary "Plumbing Company Site"; Project 02 has "Independent Studio Website". Their example.com links are not completed projects, client endorsements, or live work samples.
+
+## Technical details
+
+Static HTML5, CSS3, and vanilla JavaScript. Work Sans is provided by Google Fonts. Locally hosted GSAP and ScrollTrigger provide motion. Reduced-motion preferences disable major movement and desktop wheel glide while retaining the word-by-word About color reveal. Core content remains warm near-black and readable without JavaScript. FormSubmit processes contact form submissions. The site is suitable for static hosting on Vercel.
